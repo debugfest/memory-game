@@ -12,18 +12,18 @@ interface WinModalProps {
 export const WinModal = ({ moves, onPlayAgain }: WinModalProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
+      <div className="bg-theme-secondary rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in theme-transition">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full mb-4">
             <Trophy size={40} className="text-white" />
           </div>
 
-          <h2 className="text-3xl font-bold text-slate-800 mb-2">
+          <h2 className="text-3xl font-bold text-theme-primary mb-2 theme-transition">
             Congratulations!
           </h2>
 
-          <p className="text-slate-600 mb-6">
-            You completed the game in <span className="font-bold text-blue-600">{moves}</span> moves!
+          <p className="text-theme-secondary mb-6 theme-transition">
+            You completed the game in <span className="font-bold accent-primary theme-transition">{moves}</span> moves!
           </p>
 
           <button
