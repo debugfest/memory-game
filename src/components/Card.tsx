@@ -4,9 +4,11 @@ interface CardProps {
   card: CardType;
   onClick: (id: number) => void;
   disabled: boolean;
+  isHighlighted?: boolean;
+  isShaking?: boolean;
 }
 
-export const Card = ({ card, onClick, disabled }: CardProps) => {
+export const Card = ({ card, onClick, disabled, isHighlighted, isShaking }: CardProps) => {
   const handleClick = () => {
     if (!disabled && !card.isFlipped && !card.isMatched) {
       onClick(card.id);
@@ -20,6 +22,8 @@ export const Card = ({ card, onClick, disabled }: CardProps) => {
         relative w-full aspect-square cursor-pointer
         transition-transform duration-200 hover:scale-105 theme-transition
         ${disabled || card.isMatched ? 'cursor-default' : 'cursor-pointer'}
+        ${isHighlighted ? 'hint-glow' : ''}
+        ${isShaking ? 'hint-shake' : ''}
       `}
     >
       <div
