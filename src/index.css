@@ -121,6 +121,16 @@
   .theme-transition {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
+
+  /* Hint utilities */
+  .hint-glow {
+    position: relative;
+    box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.8), 0 0 18px rgba(250, 204, 21, 0.9);
+  }
+
+  .hint-shake {
+    animation: hintShake 0.8s ease-in-out infinite;
+  }
 }
 
 @keyframes fadeIn {
@@ -141,4 +151,12 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes hintShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
 }
