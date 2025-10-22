@@ -4,6 +4,8 @@ import { createDeck } from '../utils/gameUtils';
 import { Card } from './Card';
 import { Stats } from './Stats';
 import { WinModal } from './WinModal';
+import { ConfettiBurst } from './ConfettiBurst';
+import { Fireworks } from './FireWork';
 
 // TODO: Add timer to track how long each game takes
 // TODO: Add difficulty selection (grid size options)
@@ -201,8 +203,12 @@ export const GameBoard = () => {
         penaltyText={"Using hint adds +1 move"}
       />
 
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        {cards.map(card => (
+      {/* <div className="grid grid-cols-4 gap-4 mb-8"> */}
+      <div className={`grid grid-cols-4 gap-4 mb-8 ${
+            gameStatus === 'won' ? 'celebrate-grid' : ''
+            }`}
+      >
+        {cards.map((card, index) => (
           <Card
             key={card.id}
             card={card}
@@ -210,12 +216,18 @@ export const GameBoard = () => {
             disabled={isChecking}
             isHighlighted={highlightedIds.includes(card.id)}
             isShaking={shakingIds.includes(card.id)}
+            celebrate={gameStatus === 'won'}
+            index={index}
           />
         ))}
       </div>
 
       {gameStatus === 'won' && (
-        <WinModal moves={moves} onPlayAgain={initializeGame} />
+        <>
+          <ConfettiBurst active={true}/>
+          <Fireworks active={true}/>
+          <WinModal moves={moves} onPlayAgain={initializeGame} />
+        </>
       )}
     </div>
   );
