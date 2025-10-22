@@ -6,9 +6,11 @@ interface CardProps {
   disabled: boolean;
   isHighlighted?: boolean;
   isShaking?: boolean;
+  celebrate: boolean;
+  index: number; // index for stagger delay
 }
 
-export const Card = ({ card, onClick, disabled, isHighlighted, isShaking }: CardProps) => {
+export const Card = ({ card, onClick, disabled, isHighlighted, isShaking, celebrate, index }: CardProps) => {
   const handleClick = () => {
     if (!disabled && !card.isFlipped && !card.isMatched) {
       onClick(card.id);
@@ -18,12 +20,18 @@ export const Card = ({ card, onClick, disabled, isHighlighted, isShaking }: Card
   return (
     <div
       onClick={handleClick}
+      style={
+        celebrate
+          ? { animationDelay: `${index * 0.1}s` }
+          : undefined
+      }
       className={`
         relative w-full aspect-square cursor-pointer
         transition-transform duration-200 hover:scale-105 theme-transition
         ${disabled || card.isMatched ? 'cursor-default' : 'cursor-pointer'}
         ${isHighlighted ? 'hint-glow' : ''}
         ${isShaking ? 'hint-shake' : ''}
+        ${celebrate ? 'card-celebrate' : ''}
       `}
     >
       <div
