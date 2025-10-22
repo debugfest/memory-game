@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Custom Properties for Theme System */
+:root {
+  --color-bg-primary: #f8fafc;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #f1f5f9;
+  
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+  
+  --color-card-back: linear-gradient(135deg, #3b82f6, #2563eb);
+  --color-card-front: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  --color-card-matched: linear-gradient(135deg, #10b981, #059669);
+  --color-card-hover: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  
+  --color-accent-primary: #3b82f6;
+  --color-accent-secondary: #6366f1;
+  --color-accent-success: #10b981;
+  --color-accent-warning: #f59e0b;
+  
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-border: #e2e8f0;
+}
+
+/* Theme-aware utility classes */
 @layer utilities {
   .preserve-3d {
     transform-style: preserve-3d;
@@ -21,6 +46,80 @@
 
   .animate-scale-in {
     animation: scaleIn 0.3s ease-in-out;
+  }
+
+  /* Theme-aware background classes */
+  .bg-theme-primary {
+    background-color: var(--color-bg-primary);
+  }
+
+  .bg-theme-secondary {
+    background-color: var(--color-bg-secondary);
+  }
+
+  .bg-theme-tertiary {
+    background-color: var(--color-bg-tertiary);
+  }
+
+  /* Theme-aware text classes */
+  .text-theme-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-theme-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-theme-tertiary {
+    color: var(--color-text-tertiary);
+  }
+
+  /* Theme-aware card classes */
+  .card-back {
+    background: var(--color-card-back);
+  }
+
+  .card-front {
+    background: var(--color-card-front);
+  }
+
+  .card-matched {
+    background: var(--color-card-matched);
+  }
+
+  .card-hover {
+    background: var(--color-card-hover);
+  }
+
+  /* Theme-aware accent classes */
+  .accent-primary {
+    color: var(--color-accent-primary);
+  }
+
+  .accent-secondary {
+    color: var(--color-accent-secondary);
+  }
+
+  .accent-success {
+    color: var(--color-accent-success);
+  }
+
+  .accent-warning {
+    color: var(--color-accent-warning);
+  }
+
+  /* Theme-aware shadow and border */
+  .shadow-theme {
+    box-shadow: 0 4px 6px -1px var(--color-shadow);
+  }
+
+  .border-theme {
+    border-color: var(--color-border);
+  }
+
+  /* Smooth theme transitions */
+  .theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 }
 
