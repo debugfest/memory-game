@@ -196,3 +196,49 @@
   transition: transform 0.3s ease-in-out;
   z-index: 10;
 }
+
+/* Timer and achievement animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes achievementGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(250, 204, 21, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.8);
+  }
+}
+
+@keyframes newBestTime {
+  0% {
+    transform: scale(1);
+    color: inherit;
+  }
+  50% {
+    transform: scale(1.1);
+    color: #10b981;
+  }
+  100% {
+    transform: scale(1);
+    color: #10b981;
+  }
+}
+
+.celebrate-grid {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.achievement-notification {
+  animation: achievementGlow 2s ease-in-out infinite;
+}
+
+.new-best-time {
+  animation: newBestTime 1s ease-in-out;
+}
