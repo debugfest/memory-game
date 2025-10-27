@@ -1,13 +1,21 @@
-import { useState, useEffect } from 'react';
-import { Card as CardType, GameStatus } from '../types/game';
+import { useState, useEffect, useCallback } from 'react';
+import { Card as CardType, GameStatus, GameTimer, SpeedRunAchievement } from '../types/game';
 import { createDeck } from '../utils/gameUtils';
+import { 
+  createTimer, 
+  updateTimer, 
+  stopTimer, 
+  saveBestTime, 
+  getBestTimeForDifficulty, 
+  checkAndUnlockAchievements 
+} from '../utils/timerUtils';
 import { Card } from './Card';
 import { Stats } from './Stats';
 import { WinModal } from './WinModal';
 import { ConfettiBurst } from './ConfettiBurst';
 import { Fireworks } from './FireWork';
+import { AchievementsDisplay } from './AchievementsDisplay';
 
-// TODO: Add timer to track how long each game takes
 // TODO: Add difficulty selection (grid size options)
 // TODO: Implement sound effects for flips, matches, and wins
 // TODO: Add animations for card entrance on game start
@@ -17,28 +25,18 @@ export const GameBoard = () => {
   const [moves, setMoves] = useState(0);
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
   const [isChecking, setIsChecking] = useState(false);
+  // Timer state
+  const [timer, setTimer] = useState<GameTimer>(createTimer());
+  const [completionTime, setCompletionTime] = useState<number | undefined>(undefined);
+  const [isNewBestTime, setIsNewBestTime] = useState(false);
+  const [unlockedAchievements, setUnlockedAchievements] = useState<SpeedRunAchievement[]>([]);
+  const [showAchievements, setShowAchievements] = useState(false);
   // Hint state
   const [hintsLeft, setHintsLeft] = useState(3);
   const [isHintOnCooldown, setIsHintOnCooldown] = useState(false);
   const [hintCooldownMs, setHintCooldownMs] = useState(0);
   const [highlightedIds, setHighlightedIds] = useState<number[]>([]);
   const [shakingIds, setShakingIds] = useState<number[]>([]);
-
-  useEffect(() => {
-    initializeGame();
-  }, []);
-
-  useEffect(() => {
-    if (flippedCards.length === 2) {
-      checkForMatch();
-    }
-  }, [flippedCards]);
-
-  useEffect(() => {
-    if (cards.length > 0 && cards.every(card => card.isMatched)) {
-      setTimeout(() => setGameStatus('won'), 500);
-    }
-  }, [cards]);
 
   const initializeGame = () => {
     const newDeck = createDeck();
@@ -47,6 +45,13 @@ export const GameBoard = () => {
     setMoves(0);
     setGameStatus('playing');
     setIsChecking(false);
+    // Reset timer
+    setTimer(createTimer());
+    setCompletionTime(undefined);
+    setIsNewBestTime(false);
+    setUnlockedAchievements([]);
+    setShowAchievements(false);
+    // Reset hints
     setHintsLeft(3);
     setIsHintOnCooldown(false);
     setHintCooldownMs(0);
@@ -64,7 +69,7 @@ export const GameBoard = () => {
     setFlippedCards(prev => [...prev, id]);
   };
 
-  const checkForMatch = () => {
+  const checkForMatch = useCallback(() => {
     setIsChecking(true);
     setMoves(prev => prev + 1);
 
@@ -93,7 +98,48 @@ export const GameBoard = () => {
         setIsChecking(false);
       }, 1000);
     }
-  };
+  }, [flippedCards, cards]);
+
+  useEffect(() => {
+    initializeGame();
+  }, []);
+
+  useEffect(() => {
+    if (flippedCards.length === 2) {
+      checkForMatch();
+    }
+  }, [flippedCards, checkForMatch]);
+
+  useEffect(() => {
+    if (cards.length > 0 && cards.every(card => card.isMatched)) {
+      setTimeout(() => {
+        setGameStatus('won');
+        // Stop timer and calculate completion time
+        const stoppedTimer = stopTimer(timer);
+        setTimer(stoppedTimer);
+        setCompletionTime(stoppedTimer.elapsedTime);
+        
+        // Check for new best time
+        const isNewBest = saveBestTime(stoppedTimer.elapsedTime, moves, 'medium');
+        setIsNewBestTime(isNewBest);
+        
+        // Check for unlocked achievements
+        const newAchievements = checkAndUnlockAchievements(stoppedTimer.elapsedTime);
+        setUnlockedAchievements(newAchievements);
+      }, 500);
+    }
+  }, [cards, timer, moves]);
+
+  // Timer update effect
+  useEffect(() => {
+    if (timer.isRunning && gameStatus === 'playing') {
+      const interval = setInterval(() => {
+        setTimer(prevTimer => updateTimer(prevTimer));
+      }, 100); // Update every 100ms for smooth display
+      
+      return () => clearInterval(interval);
+    }
+  }, [timer.isRunning, gameStatus]);
 
   // Utility: find a random unmatched pair's ids
   const findRandomUnmatchedPair = (): [number, number] | null => {
@@ -201,6 +247,9 @@ export const GameBoard = () => {
         isHintOnCooldown={isHintOnCooldown}
         hintCooldownMs={hintCooldownMs}
         penaltyText={"Using hint adds +1 move"}
+        elapsedTime={timer.elapsedTime}
+        bestTime={getBestTimeForDifficulty('medium')?.time}
+        onShowAchievements={() => setShowAchievements(true)}
       />
 
       {/* <div className="grid grid-cols-4 gap-4 mb-8"> */}
@@ -226,8 +275,18 @@ export const GameBoard = () => {
         <>
           <ConfettiBurst active={true}/>
           <Fireworks active={true}/>
-          <WinModal moves={moves} onPlayAgain={initializeGame} />
+          <WinModal 
+            moves={moves} 
+            onPlayAgain={initializeGame}
+            completionTime={completionTime}
+            isNewBestTime={isNewBestTime}
+            unlockedAchievements={unlockedAchievements}
+          />
         </>
+      )}
+
+      {showAchievements && (
+        <AchievementsDisplay onClose={() => setShowAchievements(false)} />
       )}
     </div>
   );
